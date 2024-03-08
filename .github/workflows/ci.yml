@@ -19,7 +19,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v3
-    - name: Set up Python 3.10
+    - name: Set up Python 3.12
       uses: actions/setup-python@v3
       with:
         python-version: "3.12"
@@ -37,3 +37,8 @@ jobs:
     # - name: Test with pytest
     #   run: |
     #     pytest
+    - name: Build docker image and push to docker hub
+      run: |
+        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga .
+        docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga
