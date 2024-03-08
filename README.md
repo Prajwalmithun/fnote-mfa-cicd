@@ -1,5 +1,7 @@
 # fnote-mfa
 
+[![Python application](https://github.com/Prajwalmithun/fnote-mfa-cicd/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Prajwalmithun/fnote-mfa-cicd/actions/workflows/ci.yml)
+
 Minimal Note Taking App with Multi-factor Autentication enabled
 
 # Access Live Project [Not Working, Taken down to save Cloud Billing Cost]
