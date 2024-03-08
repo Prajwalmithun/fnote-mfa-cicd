@@ -61,7 +61,9 @@ jobs:
         terraform init
 
     - name: Terraform Plan
-      run: terraform plan
+      run: |
+        cd iac 
+        terraform plan
     
     - uses: trstringer/manual-approval@v1
       with:
@@ -73,5 +75,7 @@ jobs:
         exclude-workflow-initiator-as-approver: false
 
     - name: Terraform Apply
-      run: terraform apply -auto-approve
+      run:  | 
+        cd iac
+        terraform apply -auto-approve
 
