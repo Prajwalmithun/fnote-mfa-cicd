@@ -42,3 +42,36 @@ jobs:
         docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga .
         docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
         docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga
+
+    - name: aws authentication
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        # aws-region: us-east-1
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.6.6
+
+    - name: Terraform Init
+      run: | 
+        cd iac
+        terraform init
+
+    - name: Terraform Plan
+      run: terraform plan
+    
+    - uses: trstringer/manual-approval@v1
+      with:
+        secret: ${{ github.TOKEN }}
+        approvers: laysauchoa
+        minimum-approvals: 1
+        issue-title: "Deploying v1.0.0 to prod"
+        issue-body: "Review the terraform plan, then approve or deny the deployment of v1.0.0 to prod."
+        exclude-workflow-initiator-as-approver: false
+
+    - name: Terraform Apply
+      run: terraform apply -auto-approve
+
