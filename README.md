@@ -1,6 +1,6 @@
 # fnote-mfa
 
-[![Python application](https://github.com/Prajwalmithun/fnote-mfa-cicd/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Prajwalmithun/fnote-mfa-cicd/actions/workflows/ci.yml)
+[![Python application](https://github.com/Prajwalmithun/fnote-mfa-cicd/actions/workflows/cicd.yml/badge.svg?branch=main)](https://github.com/Prajwalmithun/fnote-mfa-cicd/actions/workflows/cicd.yml)
 
 Minimal Note Taking App with Multi-factor Autentication enabled
 
