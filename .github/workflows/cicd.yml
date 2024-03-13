@@ -153,8 +153,8 @@ jobs:
 
     - name: Check if EC2 instance exists
       run: |
-        grep 'fnote-mfa-cicd-terraform-instance-01' iac/terraform.tfstate
-        pwd
+        cd iac
+        grep 'fnote-mfa-cicd-terraform-instance-01' terraform.tfstate
       continue-on-error: true
       id: check_instance
 
