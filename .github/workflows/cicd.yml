@@ -154,6 +154,7 @@ jobs:
     - name: Check if EC2 instance exists
       run: |
         grep 'fnote-mfa-cicd-terraform-instance-01' iac/terraform.tfstate
+        pwd
       continue-on-error: true
       id: check_instance
 
@@ -163,6 +164,6 @@ jobs:
         cd iac
         terraform apply -auto-approve tfplan
 
-        
+
 
 
