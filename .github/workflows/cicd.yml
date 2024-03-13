@@ -1,0 +1,161 @@
+# # This workflow will install Python dependencies, run tests and lint with a single version of Python
+# # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python
+
+# name: Python application
+
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
+
+# permissions:
+#   contents: read
+
+# jobs:
+#   build:
+
+#     runs-on: ubuntu-latest
+
+#     steps:
+#     - uses: actions/checkout@v3
+#     - name: Set up Python 3.12
+#       uses: actions/setup-python@v3
+#       with:
+#         python-version: "3.12"
+#     - name: Install dependencies
+#       run: |
+#         python -m pip install --upgrade pip
+#         pip install flake8 pytest
+#         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+#     - name: Lint with flake8
+#       run: |
+#         # stop the build if there are Python syntax errors or undefined names
+#         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+#         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+#         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+#     # - name: Test with pytest
+#     #   run: |
+#     #     pytest
+#     - name: Build docker image and push to docker hub
+#       run: |
+#         docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga .
+#         docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+#         docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga
+
+#     - name: aws authentication
+#       uses: aws-actions/configure-aws-credentials@v4
+#       with:
+#         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+#         aws-region: us-east-1
+
+#     - name: Setup Terraform
+#       uses: hashicorp/setup-terraform@v1
+#       with:
+#         terraform_version: 1.6.6
+
+#     - name: Terraform Init
+#       run: | 
+#         cd iac
+#         terraform init
+
+#     - name: Terraform Plan
+#       run: |
+#         cd iac 
+#         terraform plan
+    
+#     # - uses: trstringer/manual-approval@v1
+#     #   with:
+#     #     secret: ${{ github.TOKEN }}
+#     #     approvers: Prajwalmithun
+#     #     minimum-approvals: 1
+#     #     issue-title: "Deploying v1.0.0 to prod"
+#     #     issue-body: "Review the terraform plan, then approve or deny the deployment of v1.0.0 to prod."
+#     #     exclude-workflow-initiator-as-approver: false
+
+#     - name: Terraform Apply
+#       run:  | 
+#         cd iac
+#         terraform apply -auto-approve
+
+
+
+# version: 2
+
+name: Python application
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Python 3.12
+      uses: actions/setup-python@v3
+      with:
+        python-version: "3.12"
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install flake8 pytest
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    # - name: Test with pytest
+    #   run: |
+    #     pytest
+    - name: Build docker image and push to docker hub
+      run: |
+        docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga .
+        docker login -u ${{ secrets.DOCKER_HUB_USERNAME }} -p ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+        docker push ${{ secrets.DOCKER_HUB_USERNAME }}/fnote-mfa-cicd-ga
+
+    - name: aws authentication
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: us-east-1
+
+    - name: Setup Terraform
+      uses: hashicorp/setup-terraform@v1
+      with:
+        terraform_version: 1.6.6
+
+    - name: Terraform Init
+      run: | 
+        cd iac
+        terraform init
+
+    - name: Terraform Plan
+      id: plan
+      run: |
+        cd iac 
+        terraform plan -out=tfplan
+
+    - name: Check if EC2 instance exists
+      run: |
+        grep 'aws_instance.example' iac/terraform.tfstate
+      continue-on-error: true
+      id: check_instance
+
+    - name: Terraform Apply
+      if: steps.check_instance.outcome != 'success'
+      run: |
+        cd iac
+        terraform apply -auto-approve tfplan
