@@ -50,4 +50,6 @@ resource "aws_instance" "e-jotter-terraform-instance" {
 
   # use the security group created above
   vpc_security_group_ids = [aws_security_group.e-jotter-terraform-sg.id]
+
+  user_data = file("docker_install.sh")
 }

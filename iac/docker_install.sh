@@ -25,4 +25,4 @@ sudo reboot
 
 
 #Run the e-jotter docker container as “ubuntu” user
-docker run --name e-jotter-cont01 -dit -p 5001:5001 riyadorkadi/e-jotter-amd64:latest
+docker run --name fnote-mfa-cicd-ga-cont01 -dit -p 5001:5001 prajwal3498/fnote-mfa-cicd-ga
