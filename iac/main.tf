@@ -41,7 +41,9 @@ resource "aws_security_group" "e-jotter-terraform-sg" {
 
 resource "aws_instance" "e-jotter-terraform-instance" {
   instance_type = "t2.micro"
-  ami           = "ami-0005e0cfe09cc9050"
+  #ami           = "ami-0005e0cfe09cc9050"
+  #ubuntu ec2
+  ami = "ami-080e1f13689e07408"
   tags = {
     Name = "fnote-mfa-cicd-terraform-instance-01"
   }
